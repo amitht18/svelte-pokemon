@@ -9,22 +9,32 @@
   let loading: boolean;
   let count: number;
   let pokemons: Pokemon[];
+  let filteredPokemons: Pokemon[];
 
   centralStore.subscribe((data) => {
     loading = data?.isLoading;
     count = data?.count;
     pokemons = data?.pokemons;
+    filteredPokemons = data?.pokemons;
   });
+
+
 
   onMount(async () => {
     loadPokemons();
   });
+
+  function filterList(ev) {
+    filteredPokemons = pokemons.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(ev.detail.searchString.toLowerCase())
+    );
+  }
 </script>
 
 <main>
-  <Header {loading} {count} />
+  <Header {loading} {count} on:search={filterList} />
   {#if !loading}
-    <CardList {pokemons} />
+    <CardList pokemons = {filteredPokemons} />
   {/if}
 </main>
 

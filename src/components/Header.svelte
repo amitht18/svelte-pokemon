@@ -1,8 +1,10 @@
 <script lang="ts">
   import FavoriteFilled from "./../assets/icons/heart.svg";
   import SearchIcon from "./../assets/icons/search.svg";
-
   import { centralStore } from "../store/store";
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   export let loading = false;
   export let count = 0;
@@ -11,6 +13,10 @@
   centralStore.subscribe((state) => {
     arrayOfFavorites = state.favorite;
   });
+
+  function handleSearch(event) {
+    dispatch("search", {searchString: event.target.value});
+  }
 
   $: favoutites = arrayOfFavorites.length;
 </script>
@@ -26,7 +32,7 @@
   </div>
   <div class="header-right">
     <div class="search-box">
-      <input name="search" type="text" placeholder="Search" />
+      <input name="search" type="text" placeholder="Search" on:input={handleSearch} />
       <span class="search-icon">
         {@html SearchIcon}
       </span>
