@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { loadPokemons } from "./api/api";
   import CardList from "./components/CardList.svelte";
-  import Header from "./components/header.svelte";
+  import Header from "./components/Header.svelte";
   import type { Pokemon } from "./store/state.types";
   import { centralStore } from "./store/store";
 
