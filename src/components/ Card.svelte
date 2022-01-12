@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { Pokemon } from "./../store/state.types";
-  import Icon from "@iconify/svelte";
   import { centralStore } from "../store/store";
+  import FavoriteOutline from "./../assets/icons/heart-outline.svg";
+  import FavoriteFilled from "./../assets/icons/heart.svg";
 
   let arrayOfFavorites: number[] = [];
   centralStore.subscribe((state) => {
@@ -40,16 +41,16 @@
       <span class="height">H: {pokemon.height}</span>
       <span class="weight">W: {pokemon.weight}</span>
     </div>
-    <div class="card-footer__add-fav" on:click={toggleFavorite}>
+    <div class={`card-footer__add-fav ${isFavorite() ? 'liked' : ''}`} on:click={toggleFavorite}>
       {#if isFavorite()}
-        <Icon class="favorite" icon="carbon:favorite-filled" />
+        {@html FavoriteFilled}
       {:else}
-        <Icon icon="carbon:favorite" />
+        {@html FavoriteOutline}
       {/if}
     </div>
   </div>
 </div>
 
 <style lang="scss">
-  @import './card.scss';
+  @import "./card.scss";
 </style>

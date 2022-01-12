@@ -81,6 +81,7 @@
 
   &__details {
    display: flex;
+   align-items: center;
    background: #eee;
    padding: 5px 10px;
    border-radius: 20px;
@@ -105,6 +106,8 @@
    display: flex;
    align-items: center;
    justify-content: center;
+   height: 20px;
+   width: 20px;
    padding: 5px;
    border-radius: 20px;
    background: #e3bdf4;
@@ -113,6 +116,20 @@
  }
 }
 
-:global(.card-footer__add-fav:hover svg path, .card-footer__add-fav svg.favorite path) {
+:global(.card-footer__add-fav svg) {
+    width: 16px;
+    height: 16px;
+}
+
+:global(.card-footer__add-fav svg path) {
+ stroke: #fff;
+}
+
+:global(.card-footer__add-fav:hover svg path) {
+ stroke: #fb7676;
+}
+
+:global(.card-footer__add-fav.liked svg path) {
  fill: #fb7676;
+ stroke: #fb7676;
 }
