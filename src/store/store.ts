@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { initialState, type UPDATE_TYPES } from "./state.types";
+import { initialState, Pokemon, type UPDATE_TYPES } from "./state.types";
 
 export const getState = writable(initialState);
 
@@ -38,4 +38,14 @@ function store() {
     }
 }
 
+
 export const centralStore = store();
+
+export const getPokemonDetail = (id: number) => {
+    let pokemon = {};
+
+    centralStore.subscribe(state => {
+        pokemon = state.pokemons?.find(item => item.id === id);
+    })
+    return pokemon;
+}

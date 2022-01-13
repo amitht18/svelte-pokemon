@@ -2,23 +2,43 @@
   import FavoriteFilled from "./../assets/icons/heart.svg";
   import SearchIcon from "./../assets/icons/search.svg";
   import { centralStore } from "../store/store";
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from "svelte";
+  import { clickOutside } from "../helpers/click-outside";
+  import type { Pokemon } from "../store/state.types";
 
   const dispatch = createEventDispatcher();
 
   export let loading = false;
   export let count = 0;
+  let isFavListOpen = false;
 
   let arrayOfFavorites: number[] = [];
   centralStore.subscribe((state) => {
     arrayOfFavorites = state.favorite;
   });
+  $: favoutites = arrayOfFavorites.length;
+
+  $: favoritePokemonDetailList = [];
+  centralStore.subscribe((state) => {
+    favoritePokemonDetailList = [];
+    arrayOfFavorites.map((id) => {
+      favoritePokemonDetailList.push(
+        state.pokemons.find((pokemon) => pokemon.id === id)
+      );
+    });
+  });
 
   function handleSearch(event) {
-    dispatch("search", {searchString: event.target.value});
+    dispatch("search", { searchString: event.target.value });
   }
 
-  $: favoutites = arrayOfFavorites.length;
+  function handleClickOutside() {
+    isFavListOpen = false;
+  }
+
+  function openFavList() {
+    isFavListOpen = true;
+  }
 </script>
 
 <header class="header">
@@ -32,17 +52,42 @@
   </div>
   <div class="header-right">
     <div class="search-box">
-      <input name="search" type="text" placeholder="Search" on:input={handleSearch} />
+      <input
+        name="search"
+        type="text"
+        placeholder="Search"
+        on:input={handleSearch}
+      />
       <span class="search-icon">
         {@html SearchIcon}
       </span>
     </div>
-    <div class="header-right__like-indicator">
+    <div class="header-right__like-indicator" on:click={openFavList}>
       <span class="icon-liked">
         {@html FavoriteFilled}
       </span>
       <span class="liked-label"> Pokemons liked: </span>
       <span>{favoutites}</span>
+      {#if isFavListOpen}
+        <div
+          class="favorites-list"
+          use:clickOutside
+          on:click_outside={handleClickOutside}
+        >
+          {#if favoritePokemonDetailList.length > 0}
+            {#each favoritePokemonDetailList as favPoke}
+              <div class="fav-poke">
+                <img src={favPoke.sprites.front_default} />
+                <span>{favPoke.name}</span>
+              </div>
+            {/each}
+          {:else}
+            <div class="empty-list">
+              <span>No pokemons liked yet</span>
+            </div>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
 </header>
@@ -103,9 +148,56 @@
       }
 
       &__like-indicator {
+        position: relative;
         display: flex;
         align-items: center;
         gap: 4px;
+        border: 2px solid #fb7676;
+        border-radius: 20px;
+        padding-right: 8px;
+
+        .favorites-list {
+          position: absolute;
+          right: 0;
+          top: 40px;
+          width: 300px;
+          height: 400px;
+          overflow: auto;
+          background: #fbfbfb;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+            rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+
+          .fav-poke {
+            height: 80px;
+            display: flex;
+            margin: 10px;
+            background: #fff;
+            border-radius: 5px;
+          }
+          .fav-poke img {
+            border: 1px solid #eee;
+            border-radius: 5px;
+          }
+          .fav-poke span {
+            padding: 5px 10px;
+            font-size: 16px;
+            font-weight: 500;
+            text-transform: capitalize;
+          }
+
+          .empty-list {
+            height: calc(100% - 20px);
+            width: calc(100% - 20px);
+            margin: 10px;
+            background: #fff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
       }
 
       .icon-liked {
@@ -137,6 +229,19 @@
     .header-right {
       .liked-label {
         display: none;
+      }
+    }
+  }
+
+  // mobile breakpoint
+  @media (max-width: 520px) {
+    .header {
+      flex-direction: column;
+
+      &-right {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 20px;
       }
     }
   }
